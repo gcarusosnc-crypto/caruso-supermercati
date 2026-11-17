@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10243a">
+  <title>Caruso Supermercati</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">CS</div>
+    <div><strong>CARUSO SUPERMERCATI</strong><span>Controllo incassi</span></div>
+    <span class="private-label">AREA PRIVATA</span>
+  </header>
+  <main>
+    <section class="heading">
+      <div><p class="eyebrow">PANORAMICA</p><h1>Incassi</h1><p class="muted">Riepilogo dei punti vendita</p></div>
+      <div class="date-chip" id="today-label">Oggi</div>
+    </section>
+    <section class="total-card">
+      <div class="card-caption">INCASSO COMPLESSIVO DI OGGI</div>
+      <div class="total-value" id="total-value">—</div>
+      <div class="status-line"><span class="status-dot"></span><span id="connection-status">In attesa del collegamento ai registratori POSWARE</span></div>
+    </section>
+    <section class="section-head"><h2>Punti vendita</h2><span class="muted">Aggiornamento automatico</span></section>
+    <section class="stores" id="stores">
+      <article class="store-card"><div><h3>Via Lombardia 21</h3><p>PC1 · Cassa 001</p></div><strong>—</strong></article>
+      <article class="store-card"><div><h3>Via Lombardia 10-12</h3><p>PC1 · Cassa 002</p></div><strong>—</strong></article>
+      <article class="store-card"><div><h3>Via IV Novembre 64</h3><p>PC1 · Cassa 004</p></div><strong>—</strong></article>
+      <article class="store-card"><div><h3>Viale Unità d’Italia 77</h3><p>PC2 · Casse 001 e 002</p></div><strong>—</strong></article>
+    </section>
+    <section class="footnote"><strong>Ultimo aggiornamento</strong><span id="last-update">Non ancora disponibile</span></section>
+    <p class="disclaimer">I totali verranno visualizzati dopo il collegamento sicuro ai PC POSWARE e la verifica delle regole di conteggio. Nessun dato dimostrativo viene mostrato come incasso reale.</p>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>
