@@ -41,3 +41,12 @@ Da integrare successivamente:
 
 ## Stato iniziale
 Database predisposto per punti vendita, casse, sessioni di importazione, documenti e righe di pagamento. I report POSWARE del 16/11/2026 sono stati acquisiti come riferimento iniziale per la riconciliazione. La prima versione della dashboard si concentrerà sui totali; i dettagli per pagamento e reparto sono previsti nella fase successiva.
+
+
+## Acquisizione dati — stato tecnico
+- Regola CO verificata contro i report POSWARE del 16 e 17 novembre 2026 su PC1 e PC2.
+- Edge Function `posware-ingest` pubblicata nel progetto Supabase collegato.
+- Endpoint: `https://kuulguvrykgenmtrnhyc.supabase.co/functions/v1/posware-ingest`.
+- Contratto API: [docs/posware-ingestion-contract.md](docs/posware-ingestion-contract.md).
+- Sorgente Edge Function: [supabase/functions/posware-ingest/index.ts](supabase/functions/posware-ingest/index.ts).
+- Agenti Windows non ancora installati; manca il test end-to-end e la creazione di un utente MySQL dedicato con soli permessi SELECT.
