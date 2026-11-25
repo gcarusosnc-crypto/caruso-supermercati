@@ -53,4 +53,16 @@
 <div class="account-bar"><span id="signed-user"></span><button id="logout-btn" class="text-btn" type="button">Esci</button></div>
 <p class="footnote">CARUSOAGENT <span>·</span> MONITORAGGIO INCASSI</p>
 </main>
+</div>
+<div id="temp-password-modal" class="modal-backdrop" hidden>
+ <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="temp-password-title">
+  <p class="eyebrow">CREDENZIALI TEMPORANEE</p>
+  <h2 id="temp-password-title">Account creato</h2>
+  <p id="temp-password-description" class="auth-sub">Comunica queste credenziali al collaboratore in modo riservato.</p>
+  <label for="temp-password-email">Email</label><input id="temp-password-email" type="text" readonly>
+  <label for="temp-password-value">Password temporanea</label>
+  <div class="copy-row"><input id="temp-password-value" type="text" readonly><button id="copy-temp-password" class="secondary-btn" type="button">Copia password</button></div>
+  <p id="temp-password-copy-status" class="auth-message" role="status"></p>
+  <button id="close-temp-password" class="primary-btn" type="button">Chiudi</button>
+ </section>
 </div><script type="module" src="./app.js"></script></body></html>
