@@ -17,6 +17,15 @@
   <p class="auth-note">Il titolare può richiedere l'invito iniziale. Gli altri account vengono creati dall'amministratore.</p>
   <button id="bootstrap-btn" class="secondary-btn" type="button">Invia invito a carusosnc@gmail.com</button>
   <p id="auth-message" class="auth-message" role="status"></p>
+  <section id="password-setup" hidden>
+   <div class="auth-divider"><span>IMPOSTA PASSWORD</span></div>
+   <p class="auth-note">Crea una password personale per accedere a CarusoAgent anche in futuro.</p>
+   <form id="password-form">
+    <label for="new-password">Nuova password</label><input id="new-password" type="password" autocomplete="new-password" minlength="8" placeholder="Almeno 8 caratteri" required>
+    <label for="confirm-password">Conferma password</label><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" placeholder="Ripeti la password" required>
+    <button class="primary-btn" type="submit">Salva password</button>
+   </form>
+  </section>
  </div>
 </section>
 <main id="dashboard-content" hidden>
