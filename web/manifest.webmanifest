@@ -1,6 +1,6 @@
 {
-  "name": "Supermercati Caruso",
-  "short_name": "Caruso",
+  "name": "Caruso Incassi",
+  "short_name": "Caruso Incassi",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -13,5 +13,6 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "description": "Monitoraggio incassi supermercati Caruso"
 }
