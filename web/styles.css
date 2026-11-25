@@ -159,3 +159,23 @@ body{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden;overflow-x
  .section-heading,.store-list { width:100% !important; max-width:none !important; padding-left:18px !important; padding-right:18px !important; }
  .store-card { width:100% !important; max-width:none !important; }
 }
+
+
+/* v9 — hard clamp every dashboard block to the actual narrow-screen viewport */
+@media screen and (max-width:600px) {
+ html,body { margin:0!important; padding:0!important; width:100%!important; max-width:100%!important; overflow-x:hidden!important; }
+ .app-shell,#dashboard-content { width:100%!important; max-width:100%!important; min-width:0!important; margin:0!important; overflow-x:hidden!important; }
+ #dashboard-content > * { box-sizing:border-box!important; min-width:0!important; max-width:100%!important; }
+ .topbar { width:100%!important; }
+ .intro-row { display:flex!important; flex-direction:column!important; align-items:stretch!important; width:100%!important; padding:22px 16px 14px!important; gap:12px!important; }
+ .intro-row>div:first-child { width:100%!important; max-width:100%!important; }
+ .date-box { display:flex!important; width:fit-content!important; max-width:100%!important; min-width:0!important; white-space:normal!important; overflow-wrap:anywhere!important; }
+ .hero-card { display:block!important; width:calc(100% - 24px)!important; max-width:calc(100% - 24px)!important; min-width:0!important; margin:0 12px!important; }
+ .hero-top,.hero-bottom { display:flex!important; flex-wrap:wrap!important; width:100%!important; min-width:0!important; }
+ .hero-amount { display:block!important; width:100%!important; max-width:100%!important; white-space:normal!important; overflow-wrap:anywhere!important; font-size:clamp(26px,7.5vw,38px)!important; }
+ .metrics-row { display:grid!important; width:100%!important; max-width:100%!important; min-width:0!important; grid-template-columns:repeat(3,minmax(0,1fr))!important; gap:6px!important; padding:12px 12px 22px!important; }
+ .metric-card { width:100%!important; max-width:100%!important; min-width:0!important; overflow:hidden!important; padding:10px 7px!important; }
+ .metric-card strong { font-size:clamp(12px,3.8vw,16px)!important; }
+ .section-heading,.store-list { width:100%!important; max-width:100%!important; min-width:0!important; padding-left:12px!important; padding-right:12px!important; }
+ .store-card { width:100%!important; max-width:100%!important; min-width:0!important; }
+}
