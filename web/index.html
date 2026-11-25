@@ -12,6 +12,16 @@
  <div class="auth-card">
   <p class="eyebrow">AREA RISERVATA</p><h1>Accesso CarusoAgent</h1><p class="auth-sub">Entra per consultare gli incassi aggiornati dei punti vendita.</p>
   <form id="login-form"><label>Email</label><input id="email" type="email" autocomplete="username" value="carusosnc@gmail.com" required><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="La tua password" required><button class="primary-btn" type="submit">Accedi</button></form>
+  <button id="forgot-password" class="text-btn" type="button">Password dimenticata?</button>
+  <section id="user-password-setup" hidden>
+   <div class="auth-divider"><span>IMPOSTA LA TUA PASSWORD</span></div>
+   <p class="auth-sub" id="user-password-help">Scegli una password personale per accedere a CarusoAgent.</p>
+   <form id="user-password-form">
+    <label for="user-new-password">Nuova password</label><input id="user-new-password" type="password" autocomplete="new-password" minlength="12" placeholder="Almeno 12 caratteri" required>
+    <label for="user-confirm-password">Conferma password</label><input id="user-confirm-password" type="password" autocomplete="new-password" minlength="12" placeholder="Ripeti la password" required>
+    <button class="primary-btn" type="submit">Salva e accedi</button>
+   </form>
+  </section>
   <div id="auth-divider" class="auth-divider"><span>AREA RISERVATA</span></div>
   <p class="auth-note">Procedura amministrativa protetta: richiede un codice monouso, valido per 24 ore e con massimo 5 tentativi.</p>
   <button id="owner-reset-open" class="secondary-btn" type="button">Imposta nuova password amministratore</button>
