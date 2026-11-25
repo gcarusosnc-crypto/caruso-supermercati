@@ -75,3 +75,54 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
  .bottom-nav{width:min(1000px,100%)}
  .hero-card{margin-left:32px;margin-right:32px}
 }
+
+
+/* v5: enforce true viewport sizing on installed iOS web app */
+*,*::before,*::after{box-sizing:border-box;min-width:0}
+html{width:100%;max-width:100%;overflow-x:hidden;overflow-x:clip}
+body{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden;overflow-x:clip}
+.app-shell{display:block;width:100%;max-width:720px;min-width:0;margin:0 auto;overflow-x:clip}
+#dashboard-content{display:block;width:100%;max-width:100%;min-width:0;margin:0;overflow-x:clip}
+#dashboard-content>section{width:auto;max-width:100%;min-width:0}
+.topbar{width:100%;max-width:100%;min-width:0;overflow:hidden}
+.intro-row{width:100%;max-width:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.intro-row>div,.date-box{width:100%;max-width:100%;min-width:0}
+.date-box{display:flex;align-items:flex-start;white-space:normal;overflow-wrap:anywhere}
+.hero-card{width:auto;max-width:calc(100% - 32px);min-width:0;margin-left:16px;margin-right:16px}
+.hero-top,.hero-bottom{width:100%;max-width:100%;min-width:0;display:flex;flex-wrap:wrap;justify-content:space-between}
+.hero-amount{width:100%;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:clamp(28px,8vw,48px)}
+.metrics-row{width:100%;max-width:100%;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+.metric-card{width:100%;max-width:100%;min-width:0;overflow:hidden}
+.metric-card strong,.metric-label{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.section-heading{width:100%;max-width:100%;min-width:0;display:flex;flex-wrap:wrap}
+.section-heading>div{min-width:0;max-width:100%}
+.store-list{width:100%;max-width:100%;min-width:0}
+.store-card{width:100%;max-width:100%;min-width:0}
+@media(max-width:600px){
+ .app-shell{max-width:none}
+ .topbar{height:68px;padding-left:12px;padding-right:12px;gap:8px}
+ .brand{flex:1 1 auto;max-width:calc(100% - 72px)}
+ .brand-icon{width:34px;height:34px;flex-basis:34px}
+ .brand-copy strong{font-size:clamp(8px,2.4vw,10px);letter-spacing:.035em}
+ .brand-copy small{font-size:clamp(5px,1.5vw,6px);letter-spacing:.045em}
+ .live-pill{font-size:7px;padding:5px 6px;gap:5px}
+ .intro-row{padding:22px 16px 14px}
+ .intro-row h1{font-size:clamp(24px,7vw,30px)}
+ .subheading{font-size:12px}
+ .date-box{font-size:10px;padding:8px 10px}
+ .hero-card{margin:0 12px;max-width:calc(100% - 24px);padding:18px 14px 14px;border-radius:16px}
+ .card-kicker{font-size:8px;letter-spacing:.1em}
+ .secure-mark{font-size:7px}
+ .hero-amount{font-size:clamp(27px,7.8vw,40px);margin:14px 0}
+ .status-message,.update-time{font-size:9px}
+ .metrics-row{padding:12px 12px 24px;gap:6px}
+ .metric-card{padding:10px 7px;border-radius:11px}
+ .metric-label{font-size:6.5px;letter-spacing:.04em;min-height:25px}
+ .metric-card strong{font-size:clamp(13px,4vw,17px)}
+ .metric-card small{font-size:8px}
+ .section-heading,.store-list{padding-left:12px;padding-right:12px}
+ .section-heading h2{font-size:18px}
+ .store-card{padding:11px 10px;gap:8px}
+ .store-info strong{font-size:11px}
+ .store-value strong{font-size:13px}
+}
