@@ -2,37 +2,88 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10243a">
-  <title>Caruso Supermercati</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080f1b">
+  <title>CarusoAgent · Incassi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand-mark">CS</div>
-    <div><strong>CARUSO SUPERMERCATI</strong><span>Controllo incassi</span></div>
-    <span class="private-label">AREA PRIVATA</span>
-  </header>
-  <main>
-    <section class="heading">
-      <div><p class="eyebrow">PANORAMICA</p><h1>Incassi</h1><p class="muted">Riepilogo dei punti vendita</p></div>
-      <div class="date-chip" id="today-label">Oggi</div>
-    </section>
-    <section class="total-card">
-      <div class="card-caption">INCASSO COMPLESSIVO DI OGGI</div>
-      <div class="total-value" id="total-value">—</div>
-      <div class="status-line"><span class="status-dot"></span><span id="connection-status">In attesa del collegamento ai registratori POSWARE</span></div>
-    </section>
-    <section class="section-head"><h2>Punti vendita</h2><span class="muted">Aggiornamento automatico</span></section>
-    <section class="stores" id="stores">
-      <article class="store-card"><div><h3>Via Lombardia 21</h3><p>PC1 · Cassa 001</p></div><strong>—</strong></article>
-      <article class="store-card"><div><h3>Via Lombardia 10-12</h3><p>PC1 · Cassa 002</p></div><strong>—</strong></article>
-      <article class="store-card"><div><h3>Via IV Novembre 64</h3><p>PC1 · Cassa 004</p></div><strong>—</strong></article>
-      <article class="store-card"><div><h3>Viale Unità d’Italia 77</h3><p>PC2 · Casse 001 e 002</p></div><strong>—</strong></article>
-    </section>
-    <section class="footnote"><strong>Ultimo aggiornamento</strong><span id="last-update">Non ancora disponibile</span></section>
-    <p class="disclaimer">I totali verranno visualizzati dopo il collegamento sicuro ai PC POSWARE e la verifica delle regole di conteggio. Nessun dato dimostrativo viene mostrato come incasso reale.</p>
-  </main>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><span>C</span><i></i></div>
+        <div class="brand-copy"><strong>CARUSO<span>AGENT</span></strong><small>SUPERMERCATI · CONTROL ROOM</small></div>
+      </div>
+      <div class="live-pill"><span class="live-dot"></span><span id="live-label">IN ATTESA</span></div>
+    </header>
+
+    <main>
+      <section class="intro-row">
+        <div>
+          <p class="eyebrow">PANORAMICA GENERALE</p>
+          <h1>Buongiorno.</h1>
+          <p class="subheading">Ecco il riepilogo dei tuoi punti vendita.</p>
+        </div>
+        <div class="date-box"><span class="date-icon">◷</span><span id="today-label">Oggi</span></div>
+      </section>
+
+      <section class="hero-card">
+        <div class="hero-top"><span class="card-kicker">INCASSO COMPLESSIVO · OGGI</span><span class="secure-mark">● DATI RISERVATI</span></div>
+        <div class="hero-amount" id="total-value">— <small>€</small></div>
+        <div class="hero-bottom">
+          <span class="status-message"><i class="status-dot"></i><span id="connection-status">Collegamento sicuro da completare</span></span>
+          <span class="update-time" id="last-update">—</span>
+        </div>
+        <div class="hero-glow"></div>
+      </section>
+
+      <section class="metrics-row" aria-label="Indicatori giornalieri">
+        <article class="metric-card"><span class="metric-label">SCONTRINI</span><strong id="total-docs">—</strong><small>oggi</small></article>
+        <article class="metric-card"><span class="metric-label">ANNULLATI</span><strong id="total-cancelled">—</strong><small>oggi</small></article>
+        <article class="metric-card"><span class="metric-label">SCONTRINO MEDIO</span><strong id="average-ticket">—</strong><small>oggi</small></article>
+      </section>
+
+      <section class="section-heading">
+        <div><p class="eyebrow">MONITORAGGIO LIVE</p><h2>Punti vendita</h2></div>
+        <span class="store-count">4 NEGOZI</span>
+      </section>
+
+      <section class="store-list" id="stores">
+        <article class="store-card" data-store="VL21">
+          <div class="store-symbol">01</div><div class="store-info"><strong>Via Lombardia 21</strong><span>PC1 · Cassa 1</span></div>
+          <div class="store-value"><strong>—</strong><small>IN ATTESA</small></div>
+        </article>
+        <article class="store-card" data-store="VL10_12">
+          <div class="store-symbol">02</div><div class="store-info"><strong>Via Lombardia 10–12</strong><span>PC1 · Cassa 2</span></div>
+          <div class="store-value"><strong>—</strong><small>IN ATTESA</small></div>
+        </article>
+        <article class="store-card" data-store="IVN64">
+          <div class="store-symbol">03</div><div class="store-info"><strong>Via IV Novembre 64</strong><span>PC1 · Cassa 4</span></div>
+          <div class="store-value"><strong>—</strong><small>IN ATTESA</small></div>
+        </article>
+        <article class="store-card" data-store="VUI77">
+          <div class="store-symbol">04</div><div class="store-info"><strong>Viale Unità d’Italia 77</strong><span>PC2 · Casse 1 e 2</span></div>
+          <div class="store-value"><strong>—</strong><small>IN ATTESA</small></div>
+        </article>
+      </section>
+
+      <section class="connection-card">
+        <div class="connection-icon">⌁</div><div><strong>Connessione dati protetta</strong><p id="connection-detail">I dati reali verranno caricati dopo l'attivazione dell'accesso riservato.</p></div>
+        <span class="lock-icon">▣</span>
+      </section>
+      <p class="footnote">CARUSOAGENT <span>·</span> MONITORAGGIO INCASSI</p>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navigazione principale">
+      <a class="nav-item active" href="./index.html"><span>▦</span><small>Dashboard</small></a>
+      <a class="nav-item" href="#stores"><span>⌂</span><small>Negozi</small></a>
+      <a class="nav-item" href="#statistics"><span>⌁</span><small>Statistiche</small></a>
+      <a class="nav-item" href="#archive"><span>◷</span><small>Archivio</small></a>
+    </nav>
+  </div>
   <script src="./app.js"></script>
 </body>
 </html>
