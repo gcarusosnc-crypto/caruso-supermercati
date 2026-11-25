@@ -12,6 +12,7 @@
  <div class="auth-card">
   <p class="eyebrow">AREA RISERVATA</p><h1>Accesso CarusoAgent</h1><p class="auth-sub">Entra per consultare gli incassi aggiornati dei punti vendita.</p>
   <form id="login-form"><label>Email</label><input id="email" type="email" autocomplete="username" value="carusosnc@gmail.com" required><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="La tua password" required><button class="primary-btn" type="submit">Accedi</button></form>
+  <button id="passkey-login" class="secondary-btn passkey-btn" type="button">Accedi con Face ID</button>
   <button id="forgot-password" class="text-btn" type="button">Password dimenticata? Contatta l’amministratore</button>
   <section id="user-password-setup" hidden>
    <div class="auth-divider"><span>IMPOSTA LA TUA PASSWORD</span></div>
@@ -50,7 +51,7 @@
 </section>
 <section id="admin-panel" class="admin-panel" hidden><div class="section-heading admin-heading"><div><p class="eyebrow">GESTIONE ACCESSI</p><h2>Utenti autorizzati</h2></div><span class="store-count">ADMIN</span></div>
 <form id="invite-form" class="invite-form"><input id="invite-email" type="email" placeholder="email del nuovo utente" required><select id="invite-role"><option value="viewer">Operatore · sola lettura</option><option value="admin">Amministratore</option></select><button class="primary-btn" type="submit">Crea account e genera password temporanea</button></form><div id="users-list" class="users-list"></div></section>
-<div class="account-bar"><span id="signed-user"></span><button id="logout-btn" class="text-btn" type="button">Esci</button></div>
+<div class="account-bar"><span id="signed-user"></span><button id="passkey-register" class="text-btn" type="button">Attiva Face ID su questo iPhone</button><button id="logout-btn" class="text-btn" type="button">Esci</button></div>
 <p class="footnote">CARUSOAGENT <span>·</span> MONITORAGGIO INCASSI</p>
 </main>
 </div>
