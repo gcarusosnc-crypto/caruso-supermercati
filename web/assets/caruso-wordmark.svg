@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560">
+<defs><linearGradient id="green" x2="0" y2="1"><stop stop-color="#0ab344"/><stop offset="1" stop-color="#00782c"/></linearGradient><linearGradient id="red" x2="0" y2="1"><stop stop-color="#f3212c"/><stop offset="1" stop-color="#c80a18"/></linearGradient></defs>
+<rect width="1200" height="560" rx="26" fill="#fff"/>
+<text x="600" y="128" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="112" font-weight="900" letter-spacing="2" fill="url(#green)" stroke="#111" stroke-width="7" paint-order="stroke">SUPERMERCATI</text>
+<text x="525" y="400" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="250" font-weight="900" letter-spacing="-7" fill="url(#red)" stroke="#17245c" stroke-width="10" paint-order="stroke">CARUS</text>
+<circle cx="1005" cy="296" r="116" fill="url(#red)" stroke="#17245c" stroke-width="9"/>
+<path d="M918 348C934 251 1020 193 1111 196c-9 89-62 153-143 165-22 3-39-1-50-13Z" fill="#079d3b" stroke="#fff" stroke-width="9"/>
+<text x="600" y="500" text-anchor="middle" font-family="Arial,sans-serif" font-size="66" fill="#078b34">Qualità e Convenienza dal 1969</text>
+</svg>
