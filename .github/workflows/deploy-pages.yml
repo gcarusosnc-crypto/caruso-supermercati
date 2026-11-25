@@ -1,4 +1,5 @@
 name: Deploy CarusoAgent to GitHub Pages
+# Retry deployment now that GitHub Pages has been enabled
 
 on:
   push:
