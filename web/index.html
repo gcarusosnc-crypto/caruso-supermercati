@@ -12,20 +12,19 @@
  <div class="auth-card">
   <p class="eyebrow">AREA RISERVATA</p><h1>Accesso CarusoAgent</h1><p class="auth-sub">Entra per consultare gli incassi aggiornati dei punti vendita.</p>
   <form id="login-form"><label>Email</label><input id="email" type="email" autocomplete="username" value="carusosnc@gmail.com" required><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="La tua password" required><button class="primary-btn" type="submit">Accedi</button></form>
-  <button id="forgot-btn" class="text-btn" type="button">Password dimenticata?</button>
-  <div id="auth-divider" class="auth-divider"><span>PRIMO ACCESSO</span></div>
-  <p class="auth-note">Il titolare può richiedere l'invito iniziale. Gli altri account vengono creati dall'amministratore.</p>
-  <button id="bootstrap-btn" class="secondary-btn" type="button">Invia invito a carusosnc@gmail.com</button>
-  <p id="auth-message" class="auth-message" role="status"></p>
+  <div id="auth-divider" class="auth-divider"><span>RECUPERO AMMINISTRATORE</span></div>
+  <p class="auth-note">Procedura protetta per impostare una nuova password dell'account titolare, senza inviare email e senza ricreare l'utente.</p>
+  <button id="owner-reset-open" class="secondary-btn" type="button">Imposta nuova password amministratore</button>
   <section id="password-setup" hidden>
    <div class="auth-divider"><span>IMPOSTA PASSWORD</span></div>
-   <p class="auth-note">Crea una password personale per accedere a CarusoAgent anche in futuro.</p>
    <form id="password-form">
-    <label for="new-password">Nuova password</label><input id="new-password" type="password" autocomplete="new-password" minlength="8" placeholder="Almeno 8 caratteri" required>
-    <label for="confirm-password">Conferma password</label><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" placeholder="Ripeti la password" required>
+    <label for="setup-code">Codice di autorizzazione</label><input id="setup-code" type="password" autocomplete="off" placeholder="Inserisci il codice ricevuto" required>
+    <label for="new-password">Nuova password</label><input id="new-password" type="password" autocomplete="new-password" minlength="12" placeholder="Almeno 12 caratteri" required>
+    <label for="confirm-password">Conferma password</label><input id="confirm-password" type="password" autocomplete="new-password" minlength="12" placeholder="Ripeti la password" required>
     <button class="primary-btn" type="submit">Salva password</button>
    </form>
   </section>
+  <p id="auth-message" class="auth-message" role="status"></p>
  </div>
 </section>
 <main id="dashboard-content" hidden>
