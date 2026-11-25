@@ -3,6 +3,7 @@ const SUPABASE_URL = "https://kuulguvrykgenmtrnhyc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_xBX-7Fu4ipVifCa7_Jj8TQ_LbE0f2FM";
 const API_URL = SUPABASE_URL + "/functions/v1/carusoagent-api";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+let authFlowType = new URLSearchParams(window.location.hash.slice(1)).get("type");
 const $ = (id) => document.getElementById(id);
 const euro = new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"});
 const integer = new Intl.NumberFormat("it-IT");
@@ -10,6 +11,12 @@ const dateFormat = new Intl.DateTimeFormat("it-IT",{weekday:"long",day:"2-digit"
 $("today-label").textContent = dateFormat.format(new Date());
 
 function message(text, error=false){ $("auth-message").textContent=text; $("auth-message").className="auth-message"+(error?" error":""); }
+function showPasswordSetup(){
+ $("login-form").hidden=true; $("forgot-btn").hidden=true; $("bootstrap-btn").hidden=true;
+ $("auth-divider").hidden=true;
+ $("password-setup").hidden=false;
+ $("auth-message").textContent="";
+}
 async function api(action, payload={}) {
  const {data:{session}} = await supabase.auth.getSession();
  const headers={"Content-Type":"application/json","apikey":SUPABASE_KEY};
@@ -73,8 +80,22 @@ $("bootstrap-btn").addEventListener("click",async()=>{
 });
 $("forgot-btn").addEventListener("click",async()=>{
  const email=$("email").value.trim();if(!email){message("Inserisci prima l'indirizzo email.",true);return;}
- const {error}=await supabase.auth.resetPasswordForEmail(email);
+ const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:"https://gcarusosnc-crypto.github.io/caruso-supermercati/"});
  message(error?error.message:"Se l'indirizzo è registrato, riceverai il link per reimpostare la password.",!!error);
+});
+$("password-form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const password=$("new-password").value, confirmation=$("confirm-password").value;
+ if(password.length<8){message("La password deve contenere almeno 8 caratteri.",true);return;}
+ if(password!==confirmation){message("Le due password non coincidono.",true);return;}
+ const btn=e.submitter;btn.disabled=true;message("Salvataggio password in corso…");
+ const {error}=await supabase.auth.updateUser({password});
+ btn.disabled=false;
+ if(error){message("Impossibile salvare la password: "+error.message,true);return;}
+ authFlowType=null;window.history.replaceState({},document.title,window.location.pathname+window.location.search);
+ $("password-setup").hidden=true;$("login-form").hidden=false;$("forgot-btn").hidden=false;$("bootstrap-btn").hidden=false;
+ message("Password impostata correttamente. Accesso in corso…");
+ await refreshSession();
 });
 $("logout-btn").addEventListener("click",async()=>{await supabase.auth.signOut();$("dashboard-content").hidden=true;$("auth-panel").hidden=false;$("live-label").textContent="OFFLINE";});
 $("invite-form").addEventListener("submit",async e=>{
@@ -86,9 +107,10 @@ $("invite-form").addEventListener("submit",async e=>{
 async function refreshSession(){
  const {data:{session}}=await supabase.auth.getSession();
  if(!session){$("auth-panel").hidden=false;$("dashboard-content").hidden=true;$("live-label").textContent="OFFLINE";return;}
+ if(authFlowType==="invite" || authFlowType==="recovery"){ $("auth-panel").hidden=false;$("dashboard-content").hidden=true;showPasswordSetup();return;}
  try{const result=await api("dashboard");showDashboard(result.user,result.user.role);await loadDashboard();}
  catch(e){await supabase.auth.signOut();$("auth-panel").hidden=false;$("dashboard-content").hidden=true;message("Questo account non è ancora autorizzato. Chiedi all'amministratore di inviarti un invito.",true);}
 }
-supabase.auth.onAuthStateChange((_event)=>{setTimeout(refreshSession,0);});
+supabase.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")authFlowType="recovery";setTimeout(refreshSession,0);});
 await refreshSession();
 setInterval(()=>{if(!$("dashboard-content").hidden)loadDashboard();},30000);
