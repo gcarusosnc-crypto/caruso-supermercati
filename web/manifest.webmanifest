@@ -1,0 +1,17 @@
+{
+  "name": "Supermercati Caruso",
+  "short_name": "Caruso",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080f1b",
+  "theme_color": "#080f1b",
+  "icons": [
+    {
+      "src": "./assets/caruso-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
