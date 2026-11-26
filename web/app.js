@@ -149,29 +149,38 @@ function passkeySupported(){return window.isSecureContext && !!window.PublicKeyC
 if(!passkeySupported()){$("passkey-login").hidden=true;$("passkey-register").hidden=true;}
 $("passkey-login").addEventListener("click",async()=>{const btn=$("passkey-login");btn.disabled=true;message("Attendo la conferma Face ID…");try{const {error}=await supabase.auth.signInWithPasskey();if(error)throw error;await refreshSession();}catch(err){message("Accesso con Face ID non riuscito: "+(err.message||err),true);}finally{btn.disabled=false;}});
 $("passkey-register").addEventListener("click",async()=>{const btn=$("passkey-register");btn.disabled=true;try{const {data,error}=await supabase.auth.registerPasskey();if(error)throw error;alert("Face ID attivato per questo account su questo iPhone. La prossima volta potrai accedere con la passkey.");btn.textContent="Face ID attivo";btn.disabled=true;}catch(err){alert("Impossibile attivare Face ID: "+(err.message||err));}finally{if(btn.textContent!=="Face ID attivo")btn.disabled=false;}});
+const VAPID_PUBLIC_KEY = "BKDBwqHRS-9A5m7jWlIeDODwyEQqJ5yJ6hknN1Wab94QTH0FVps0_3W3b9wd6vDKPHPRBLKC6MGSAQY_c9sFbcw";
+function urlBase64ToUint8Array(base64String){
+ const padding="=".repeat((4-base64String.length%4)%4);
+ const base64=(base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
+ const raw=atob(base64);return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+}
 async function updateNotificationButton(){
  const btn=$("notifications-enable");
- if(!("Notification" in window)){btn.textContent="Notifiche non supportate";btn.disabled=true;return;}
- if(Notification.permission==="granted"){btn.textContent="Notifiche autorizzate";btn.classList.add("notifications-enabled");}
- else if(Notification.permission==="denied"){btn.textContent="Notifiche bloccate";btn.title="Consenti le notifiche dalle impostazioni del browser o dell'iPhone";}
+ if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window)){btn.textContent="Notifiche non supportate";btn.disabled=true;return;}
+ if(Notification.permission==="denied"){btn.textContent="Notifiche bloccate";btn.title="Consenti le notifiche dalle impostazioni dell'iPhone";return;}
+ try{
+  const reg=await navigator.serviceWorker.getRegistration("./");
+  const sub=reg?await reg.pushManager.getSubscription():null;
+  if(sub){btn.textContent="Notifiche attive su questo dispositivo";btn.classList.add("notifications-enabled");}
+  else{btn.textContent=Notification.permission==="granted"?"Completa attivazione notifiche":"Attiva notifiche";}
+ }catch{btn.textContent="Attiva notifiche";}
 }
 $("notifications-enable").addEventListener("click",async()=>{
- const btn=$("notifications-enable");btn.disabled=true;btn.textContent="Attivazione…";
+ const btn=$("notifications-enable");btn.disabled=true;btn.textContent="Collegamento…";
  try{
-  if(!("Notification" in window))throw new Error("Questo browser non supporta le notifiche.");
-  if(!("serviceWorker" in navigator))throw new Error("Il browser non supporta il servizio notifiche.");
+  if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window))throw new Error("Web Push non supportato da questo browser.");
+  const permission=await Notification.requestPermission();
+  if(permission!=="granted"){btn.textContent=permission==="denied"?"Notifiche bloccate":"Attiva notifiche";if(permission==="denied")alert("Abilita le notifiche di Caruso Incassi dalle impostazioni dell'iPhone.");return;}
   const registration=await navigator.serviceWorker.register("./sw.js");
   await navigator.serviceWorker.ready;
-  const permission=await Notification.requestPermission();
-  if(permission!=="granted"){
-   btn.textContent=permission==="denied"?"Notifiche bloccate":"Attivazione non completata";
-   if(permission==="denied")alert("Hai bloccato le notifiche. Per abilitarle, modifica i permessi del sito nelle impostazioni dell'iPhone.");
-   return;
-  }
-  btn.textContent="Notifiche autorizzate";btn.classList.add("notifications-enabled");
-  alert("Permesso notifiche concesso su questo dispositivo. La ricezione automatica dei report e degli avvisi sarà attiva dopo il collegamento del dispositivo al servizio notifiche Caruso Incassi.");
- }catch(err){btn.textContent="Attiva notifiche";alert("Impossibile attivare le notifiche: "+(err.message||err));}
- finally{if(Notification.permission!=="granted")btn.disabled=false;}
+  let subscription=await registration.pushManager.getSubscription();
+  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
+  await api("push_subscribe",{subscription:subscription.toJSON(),device_label:/iPhone|iPad/i.test(navigator.userAgent)?"iPhone/iPad":"Browser"});
+  btn.textContent="Notifiche attive su questo dispositivo";btn.classList.add("notifications-enabled");
+  alert("Dispositivo collegato a Caruso Incassi. Le notifiche push potranno ora essere inviate a questo dispositivo.");
+ }catch(err){btn.textContent="Riprova attivazione";alert("Collegamento notifiche non riuscito: "+(err.message||err));}
+ finally{btn.disabled=false;}
 });
 updateNotificationButton();
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();message("Accesso in corso…");const {error}=await supabase.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){message("Accesso non riuscito. Verifica email e password.",true);return;}await refreshSession();});
