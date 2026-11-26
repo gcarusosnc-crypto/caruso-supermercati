@@ -49,6 +49,27 @@
 <article class="store-card" data-store="IVN64"><div class="store-symbol">03</div><div class="store-info"><strong>Via IV Novembre 64</strong><span>PC1 · Cassa 4</span></div><div class="store-value"><strong>—</strong><small>—</small></div></article>
 <article class="store-card" data-store="VUI77"><div class="store-symbol">04</div><div class="store-info"><strong>Viale Unità d’Italia 77</strong><span>PC2 · Casse 1 e 2</span></div><div class="store-value"><strong>—</strong><small>—</small></div></article>
 </section>
+<section class="analytics-launch"><button id="analytics-open" class="secondary-btn" type="button">📊 ANALISI &amp; STATISTICHE</button></section>
+<section id="analytics-panel" class="analytics-panel" hidden>
+ <div class="section-heading analytics-title"><div><p class="eyebrow">STORICO DAL 2025</p><h2>Analisi &amp; statistiche</h2></div><button id="analytics-close" class="text-btn" type="button">Torna alla panoramica</button></div>
+ <div class="analytics-filters">
+  <label>DAL<input id="analytics-from" type="date" value="2025-01-01"></label>
+  <label>AL<input id="analytics-to" type="date"></label>
+  <label>PUNTO VENDITA<select id="analytics-store"><option value="all">Tutti i punti vendita</option><option value="VL21">Via Lombardia 21</option><option value="VL10_12">Via Lombardia 10–12</option><option value="IVN64">Via IV Novembre 64</option><option value="VUI77">Viale Unità d’Italia 77</option></select></label>
+  <button id="analytics-run" class="primary-btn" type="button">Aggiorna statistiche</button>
+ </div>
+ <p id="analytics-status" class="analytics-status">Seleziona il periodo e avvia l'analisi.</p>
+ <div id="analytics-kpis" class="analytics-kpis"></div>
+ <div class="analytics-grid">
+  <article class="analytics-card"><h3>Andamento giornaliero</h3><p>Ultimi 31 giorni del periodo selezionato</p><div id="chart-daily" class="bar-chart"></div></article>
+  <article class="analytics-card"><h3>Andamento mensile</h3><p>Incassi per mese</p><div id="chart-monthly" class="bar-chart"></div></article>
+  <article class="analytics-card"><h3>Confronto punti vendita</h3><p>Incasso e scontrino medio</p><div id="chart-stores" class="bar-chart"></div></article>
+  <article class="analytics-card"><h3>Giorni della settimana</h3><p>Distribuzione degli incassi</p><div id="chart-weekdays" class="bar-chart"></div></article>
+  <article class="analytics-card"><h3>Fasce orarie</h3><p>Numero di scontrini e incassi</p><div id="chart-hours" class="bar-chart"></div></article>
+  <article class="analytics-card"><h3>Tipologie documenti</h3><p>Documenti acquisiti nel periodo</p><div id="chart-types" class="bar-chart"></div></article>
+ </div>
+ <p class="analytics-footnote">Gli incassi si basano sugli scontrini CO non annullati e non classificati come nota di credito. I dati di prodotti e metodi di pagamento non sono ancora disponibili nello storico importato.</p>
+</section>
 <section id="admin-panel" class="admin-panel" hidden><div class="section-heading admin-heading"><div><p class="eyebrow">GESTIONE ACCESSI</p><h2>Utenti autorizzati</h2></div><span class="store-count">ADMIN</span></div>
 <form id="invite-form" class="invite-form"><input id="invite-email" type="email" placeholder="email del nuovo utente" required><select id="invite-role"><option value="viewer">Operatore · sola lettura</option><option value="admin">Amministratore</option></select><button class="primary-btn" type="submit">Crea account e genera password temporanea</button></form><div id="users-list" class="users-list"></div></section>
 <div class="account-bar"><span id="signed-user"></span><button id="passkey-register" class="text-btn" type="button">Attiva Face ID su questo iPhone</button><button id="logout-btn" class="text-btn" type="button">Esci</button></div>
