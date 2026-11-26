@@ -177,6 +177,11 @@ $("notifications-enable").addEventListener("click",async()=>{
   let subscription=await registration.pushManager.getSubscription();
   if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
   await api("push_subscribe",{subscription:subscription.toJSON(),device_label:/iPhone|iPad/i.test(navigator.userAgent)?"iPhone/iPad":"Browser"});
+  const {data:{session}}=await supabase.auth.getSession();
+  if(!session?.access_token)throw new Error("Sessione scaduta: accedi nuovamente.");
+  const testResponse=await fetch(SUPABASE_URL+"/functions/v1/carusoagent-push",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+session.access_token},body:JSON.stringify({action:"test"})});
+  const testResult=await testResponse.json().catch(()=>({}));
+  if(!testResponse.ok||!testResult.ok)throw new Error(testResult.error||"invio notifica di prova non riuscito");
   btn.textContent="Notifiche attive su questo dispositivo";btn.classList.add("notifications-enabled");
   alert("Dispositivo collegato a Caruso Incassi. Le notifiche push potranno ora essere inviate a questo dispositivo.");
  }catch(err){btn.textContent="Riprova attivazione";alert("Collegamento notifiche non riuscito: "+(err.message||err));}
