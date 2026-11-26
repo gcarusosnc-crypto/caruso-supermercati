@@ -37,6 +37,57 @@ function showDashboard(user,role){if(document.activeElement&&typeof document.act
 async function loadDashboard(){try{const result=await api("dashboard");const data=result.data,totals=data.totals||{};const total=Number(totals.gross_total||0),docs=Number(totals.receipt_count||0);$("total-value").innerHTML=euro.format(total).replace(" €"," <small>€</small>");$("total-docs").textContent=integer.format(docs);$("total-cancelled").textContent=integer.format(Number(totals.cancelled_count||0));$("average-ticket").textContent=euro.format(docs?total/docs:0);const byCode=new Map((data.stores||[]).map(s=>[s.code,s]));document.querySelectorAll("[data-store]").forEach(card=>{const store=byCode.get(card.dataset.store),value=card.querySelector(".store-value strong"),hint=card.querySelector(".store-value small");if(!store){value.textContent=euro.format(0);hint.textContent="NESSUNO SCONTRINO";return;}value.textContent=euro.format(Number(store.gross_total||0));hint.textContent=integer.format(Number(store.receipt_count||0))+" SCONTRINI";});$("connection-status").textContent="Dati aggiornati";$("last-update").textContent="Agg. "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});$("live-label").textContent="LIVE";}catch(e){$("connection-status").textContent="Aggiornamento non riuscito";$("live-label").textContent="ERRORE";console.error(e);}}
 async function loadUsers(){try{const {users}=await api("list_users");$("users-list").innerHTML="";users.forEach(u=>{const row=document.createElement("div");row.className="user-row";const info=document.createElement("span");info.textContent=u.email;const role=document.createElement("small");role.textContent=(u.role==="admin"?"Amministratore":"Sola lettura")+(u.must_change_password?" · Password da cambiare":"");row.append(info,role);if(u.email.toLowerCase()!=="carusosnc@gmail.com"){const reset=document.createElement("button");reset.type="button";reset.className="text-btn";reset.textContent="Genera password temporanea";reset.addEventListener("click",async()=>{if(!confirm("Generare una nuova password temporanea per "+u.email+"? La password attuale non sarà più valida."))return;reset.disabled=true;try{const r=await api("reset_user_temp_password",{user_id:u.user_id});showTemporaryPassword(r.email,r.temporary_password,true);await loadUsers();}catch(err){alert("Errore: "+err.message);}finally{reset.disabled=false;}});row.append(reset);} $("users-list").append(row);});}catch(e){$("users-list").textContent=e.message;}}
 
+
+const analyticsEuro = new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"});
+const weekdayNames=["","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
+function chartBars(targetId, rows, labelFn, valueFn, formatter=analyticsEuro, limit=40){
+ const target=$(targetId);target.innerHTML="";
+ const values=rows.slice(-limit);const max=Math.max(1,...values.map(valueFn));
+ if(!values.length){target.textContent="Nessun dato nel periodo";return;}
+ values.forEach(row=>{
+  const wrap=document.createElement("div");wrap.className="bar-row";
+  const label=document.createElement("span");label.className="bar-label";label.textContent=labelFn(row);
+  const track=document.createElement("div");track.className="bar-track";
+  const fill=document.createElement("i");fill.className="bar-fill";fill.style.width=Math.max(1,(valueFn(row)/max)*100)+"%";track.append(fill);
+  const value=document.createElement("strong");value.className="bar-value";value.textContent=formatter.format(valueFn(row));
+  wrap.append(label,track,value);target.append(wrap);
+ });
+}
+function renderAnalytics(data){
+ const s=data.summary||{},c=data.comparison||{};
+ const kpis=[
+  ["INCASSO PERIODO",analyticsEuro.format(Number(s.gross_total||0))],
+  ["SCONTRINI",integer.format(Number(s.receipt_count||0))],
+  ["SCONTRINO MEDIO",analyticsEuro.format(Number(s.average_ticket||0))],
+  ["ANNULLATI",integer.format(Number(s.cancelled_count||0))],
+  ["TASSO ANNULLAMENTO",Number(s.cancel_rate||0).toLocaleString("it-IT")+"%"],
+  ["SCONTI REGISTRATI",analyticsEuro.format(Number(s.discounts||0))],
+  ["VARIAZIONE INCASSO",c.gross_change_pct==null?"—":(Number(c.gross_change_pct)>0?"+":"")+Number(c.gross_change_pct).toLocaleString("it-IT")+"%"],
+  ["VARIAZIONE SCONTRINI",c.receipt_change_pct==null?"—":(Number(c.receipt_change_pct)>0?"+":"")+Number(c.receipt_change_pct).toLocaleString("it-IT")+"%"]
+ ];
+ $("analytics-kpis").innerHTML="";
+ kpis.forEach(([label,value])=>{const card=document.createElement("article");card.className="analytics-kpi";const l=document.createElement("small");l.textContent=label;const v=document.createElement("strong");v.textContent=value;card.append(l,v);$("analytics-kpis").append(card);});
+ chartBars("chart-daily",data.daily||[],x=>String(x.day).slice(5),x=>Number(x.gross_total||0),analyticsEuro,31);
+ chartBars("chart-monthly",data.monthly||[],x=>String(x.month).slice(0,7),x=>Number(x.gross_total||0),analyticsEuro,48);
+ chartBars("chart-stores",data.stores||[],x=>x.name,x=>Number(x.gross_total||0),analyticsEuro,12);
+ chartBars("chart-weekdays",data.weekdays||[],x=>weekdayNames[Number(x.weekday)]||"—",x=>Number(x.gross_total||0),analyticsEuro,7);
+ chartBars("chart-hours",data.hours||[],x=>String(x.hour).padStart(2,"0")+":00",x=>Number(x.gross_total||0),analyticsEuro,24);
+ chartBars("chart-types",data.document_types||[],x=>x.type+" · "+integer.format(Number(x.document_count||0)),x=>Number(x.document_count||0),integer,20);
+}
+async function runAnalytics(){
+ const from=$("analytics-from").value,to=$("analytics-to").value,store=$("analytics-store").value;
+ if(!from||!to||from>to){$("analytics-status").textContent="Seleziona un intervallo di date valido.";return;}
+ const btn=$("analytics-run");btn.disabled=true;$("analytics-status").textContent="Elaborazione dello storico in corso…";
+ try{
+  const {data,error}=await supabase.rpc("carusoagent_analytics",{p_from:from,p_to:to,p_store_code:store==="all"?null:store});
+  if(error)throw error;
+  renderAnalytics(data);$("analytics-status").textContent="Analisi aggiornata · "+from+" → "+to+(store==="all"?" · Tutti i punti vendita":" · "+$("analytics-store").selectedOptions[0].textContent);
+ }catch(err){$("analytics-status").textContent="Errore durante l'analisi: "+(err.message||err);console.error("CarusoAgent analytics",err);}
+ finally{btn.disabled=false;}
+}
+$("analytics-open").addEventListener("click",()=>{$("analytics-panel").hidden=false;document.querySelector(".intro-row").hidden=true;document.querySelector(".hero-card").hidden=true;document.querySelector(".metrics-row").hidden=true;document.querySelector(".section-heading:not(.analytics-title)").hidden=true; $("stores").hidden=true;$("admin-panel").hidden=true; $("analytics-to").value=new Date().toLocaleDateString("en-CA",{timeZone:"Europe/Rome"});runAnalytics();window.scrollTo(0,0);});
+$("analytics-close").addEventListener("click",()=>{$("analytics-panel").hidden=true;document.querySelector(".intro-row").hidden=false;document.querySelector(".hero-card").hidden=false;document.querySelector(".metrics-row").hidden=false;document.querySelectorAll("#dashboard-content>.section-heading:not(.analytics-title)").forEach(x=>x.hidden=false);$("stores").hidden=false;if(document.querySelector("#admin-panel"))$("admin-panel").hidden=$("signed-user").textContent.includes("Amministratore")?false:true;window.scrollTo(0,0);});
+$("analytics-run").addEventListener("click",runAnalytics);
 function passkeySupported(){return window.isSecureContext && !!window.PublicKeyCredential && typeof supabase.auth.registerPasskey==="function" && typeof supabase.auth.signInWithPasskey==="function";}
 if(!passkeySupported()){$("passkey-login").hidden=true;$("passkey-register").hidden=true;}
 $("passkey-login").addEventListener("click",async()=>{const btn=$("passkey-login");btn.disabled=true;message("Attendo la conferma Face ID…");try{const {error}=await supabase.auth.signInWithPasskey();if(error)throw error;await refreshSession();}catch(err){message("Accesso con Face ID non riuscito: "+(err.message||err),true);}finally{btn.disabled=false;}});
