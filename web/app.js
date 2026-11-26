@@ -149,6 +149,31 @@ function passkeySupported(){return window.isSecureContext && !!window.PublicKeyC
 if(!passkeySupported()){$("passkey-login").hidden=true;$("passkey-register").hidden=true;}
 $("passkey-login").addEventListener("click",async()=>{const btn=$("passkey-login");btn.disabled=true;message("Attendo la conferma Face ID…");try{const {error}=await supabase.auth.signInWithPasskey();if(error)throw error;await refreshSession();}catch(err){message("Accesso con Face ID non riuscito: "+(err.message||err),true);}finally{btn.disabled=false;}});
 $("passkey-register").addEventListener("click",async()=>{const btn=$("passkey-register");btn.disabled=true;try{const {data,error}=await supabase.auth.registerPasskey();if(error)throw error;alert("Face ID attivato per questo account su questo iPhone. La prossima volta potrai accedere con la passkey.");btn.textContent="Face ID attivo";btn.disabled=true;}catch(err){alert("Impossibile attivare Face ID: "+(err.message||err));}finally{if(btn.textContent!=="Face ID attivo")btn.disabled=false;}});
+async function updateNotificationButton(){
+ const btn=$("notifications-enable");
+ if(!("Notification" in window)){btn.textContent="Notifiche non supportate";btn.disabled=true;return;}
+ if(Notification.permission==="granted"){btn.textContent="Notifiche autorizzate";btn.classList.add("notifications-enabled");}
+ else if(Notification.permission==="denied"){btn.textContent="Notifiche bloccate";btn.title="Consenti le notifiche dalle impostazioni del browser o dell'iPhone";}
+}
+$("notifications-enable").addEventListener("click",async()=>{
+ const btn=$("notifications-enable");btn.disabled=true;btn.textContent="Attivazione…";
+ try{
+  if(!("Notification" in window))throw new Error("Questo browser non supporta le notifiche.");
+  if(!("serviceWorker" in navigator))throw new Error("Il browser non supporta il servizio notifiche.");
+  const registration=await navigator.serviceWorker.register("./sw.js");
+  await navigator.serviceWorker.ready;
+  const permission=await Notification.requestPermission();
+  if(permission!=="granted"){
+   btn.textContent=permission==="denied"?"Notifiche bloccate":"Attivazione non completata";
+   if(permission==="denied")alert("Hai bloccato le notifiche. Per abilitarle, modifica i permessi del sito nelle impostazioni dell'iPhone.");
+   return;
+  }
+  btn.textContent="Notifiche autorizzate";btn.classList.add("notifications-enabled");
+  alert("Permesso notifiche concesso su questo dispositivo. La ricezione automatica dei report e degli avvisi sarà attiva dopo il collegamento del dispositivo al servizio notifiche Caruso Incassi.");
+ }catch(err){btn.textContent="Attiva notifiche";alert("Impossibile attivare le notifiche: "+(err.message||err));}
+ finally{if(Notification.permission!=="granted")btn.disabled=false;}
+});
+updateNotificationButton();
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();message("Accesso in corso…");const {error}=await supabase.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){message("Accesso non riuscito. Verifica email e password.",true);return;}await refreshSession();});
 $("owner-reset-open").addEventListener("click",()=>showPasswordSetup());
 $("forgot-password").addEventListener("click",()=>message("Per sicurezza non inviamo email automatiche. Contatta l’amministratore: dalla console può generare una nuova password temporanea per il tuo account."));
