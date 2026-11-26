@@ -259,3 +259,6 @@ body{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden;overflow-x
  .comparison-metric strong{font-size:14px}
 }
 @media(max-width:360px){.quick-buttons button{font-size:8px}.analytics-filters{grid-template-columns:1fr}.analytics-filters .primary-btn{grid-column:auto}}
+
+/* Notifiche: azione accanto all’accesso biometrico */
+.account-bar{flex-wrap:wrap;gap:8px 14px}.account-bar .notifications-btn{color:#9bd9bf}.account-bar .notifications-btn.notifications-enabled{color:#69d7b0;font-weight:800}
