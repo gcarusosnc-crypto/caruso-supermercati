@@ -214,3 +214,48 @@ body{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden;overflow-x
  .store-value strong { font-size:clamp(17px,4.8vw,21px) !important; line-height:1.2 !important; }
  .store-value small { font-size:9px !important; }
 }
+
+/* v12 — report giornaliero e confronti rapidi, ottimizzati per smartphone */
+.yesterday-launch{padding:0 24px 16px}
+.yesterday-launch .secondary-btn{height:52px;font-size:13px;font-weight:800;letter-spacing:.04em;border-color:#477064;background:linear-gradient(110deg,#173c3b,#142d3a);color:#c9f3e2}
+.yesterday-panel{margin:0 24px 24px;padding:17px;border:1px solid #35516a;border-radius:15px;background:linear-gradient(145deg,#132438,#0d1a29)}
+.yesterday-panel[hidden]{display:none!important}
+.yesterday-panel .section-heading{padding:0 0 12px}
+.subsection-title{font:700 14px Manrope;margin:20px 0 10px}
+.yesterday-stores{display:grid;gap:8px}
+.yesterday-store{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border:1px solid #293d52;border-radius:10px;background:#101e2e}
+.yesterday-store strong{display:block;font-size:12px}.yesterday-store small{display:block;color:#8195a9;font-size:10px;margin-top:4px}
+.yesterday-store b{font:700 14px Manrope;white-space:nowrap}
+.analytics-quick,.yoy-tools{margin:0 24px 14px;padding:14px;border:1px solid #293d52;border-radius:12px;background:#0e1b2a}
+.quick-label{margin:0 0 10px;color:#89a6bb;font-size:9px;font-weight:800;letter-spacing:.14em}
+.quick-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.quick-buttons button{min-height:46px;padding:8px 4px;border:1px solid #36516a;border-radius:9px;background:#172b40;color:#d8e7f2;font:800 10px "DM Sans";letter-spacing:.025em}
+.quick-buttons button:active,.quick-buttons button:focus-visible{border-color:#69d7b0;background:#1b3c46;outline:none}
+.analytics-filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 24px 12px}
+.analytics-filters label{display:grid;gap:6px;color:#91a7bb;font-size:9px;font-weight:800;letter-spacing:.1em}
+.analytics-filters input,.analytics-filters select{width:100%;min-width:0;height:43px;border:1px solid #30465c;border-radius:9px;background:#0b1725;color:#edf4fa;padding:0 10px;font:12px "DM Sans"}
+.analytics-filters .primary-btn{grid-column:1/-1;width:100%;margin:0;min-height:46px}
+.yoy-tools{margin-top:0}
+.comparison-results{display:grid;gap:10px;padding:0 24px 16px}
+.comparison-card{padding:14px;border:1px solid #2c4358;border-radius:12px;background:linear-gradient(135deg,#122236,#0d1928)}
+.comparison-card h3{font:700 13px Manrope;margin:0 0 6px}
+.comparison-period{font-size:10px;color:#8ea3b7;margin:0 0 12px}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.comparison-metric{padding:9px;border-radius:8px;background:#0a1623}
+.comparison-metric small{display:block;color:#8096aa;font-size:8px;letter-spacing:.08em}
+.comparison-metric strong{display:block;margin-top:4px;font:700 15px Manrope}
+.comparison-delta{font-size:10px;color:#a8d9c6;margin-top:10px}
+.comparison-delta.negative{color:#f0ad9e}
+.comparison-store{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #26394d;font-size:10px}
+.comparison-store strong{white-space:nowrap}
+.analytics-status{padding:0 24px;color:#8da3b8;font-size:10px;line-height:1.5}
+@media(max-width:520px){
+ .yesterday-launch{padding:0 16px 14px}.yesterday-panel{margin:0 16px 20px;padding:14px}
+ .analytics-quick,.yoy-tools{margin-left:16px;margin-right:16px;padding:11px}
+ .analytics-filters{padding-left:16px;padding-right:16px;gap:8px}
+ .analytics-filters label{font-size:8px}.analytics-filters input,.analytics-filters select{font-size:11px}
+ .quick-buttons{gap:5px}.quick-buttons button{min-height:48px;font-size:9px}
+ .comparison-results{padding-left:16px;padding-right:16px}
+ .comparison-metric strong{font-size:14px}
+}
+@media(max-width:360px){.quick-buttons button{font-size:8px}.analytics-filters{grid-template-columns:1fr}.analytics-filters .primary-btn{grid-column:auto}}
