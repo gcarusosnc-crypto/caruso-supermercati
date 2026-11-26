@@ -202,3 +202,15 @@ body{width:100%;max-width:100%;min-width:0;margin:0;overflow-x:hidden;overflow-x
 .analytics-footnote{font-size:9px;line-height:1.6;color:#71869b;margin:16px 0 0}
 @media(min-width:700px){.analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.analytics-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.analytics-filters{grid-template-columns:repeat(4,minmax(0,1fr));align-items:end}.analytics-filters .primary-btn{grid-column:auto}.analytics-panel{padding-left:32px;padding-right:32px}}
 @media(max-width:420px){.analytics-panel{padding-left:12px;padding-right:12px}.analytics-launch{padding-left:12px;padding-right:12px}.analytics-filters{padding:10px;gap:8px}.analytics-kpi{padding:11px 9px}}
+
+
+/* v11 — larger, more readable store rows on phones with available screen space */
+@media screen and (max-width:600px) {
+ .store-list { gap:12px !important; }
+ .store-card { min-height:88px !important; padding:16px 16px !important; gap:12px !important; }
+ .store-symbol { width:42px !important; height:42px !important; flex-basis:42px !important; font-size:12px !important; }
+ .store-info strong { font-size:15px !important; line-height:1.25 !important; white-space:normal !important; }
+ .store-info span { font-size:11px !important; margin-top:6px !important; }
+ .store-value strong { font-size:clamp(17px,4.8vw,21px) !important; line-height:1.2 !important; }
+ .store-value small { font-size:9px !important; }
+}
