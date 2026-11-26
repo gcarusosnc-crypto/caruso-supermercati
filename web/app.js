@@ -74,9 +74,66 @@ function renderAnalytics(data){
  chartBars("chart-hours",data.hours||[],x=>String(x.hour).padStart(2,"0")+":00",x=>Number(x.gross_total||0),analyticsEuro,24);
  chartBars("chart-types",data.document_types||[],x=>x.type+" · "+integer.format(Number(x.document_count||0)),x=>Number(x.document_count||0),integer,20);
 }
+
+function localDateISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
+function parseISODate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d,12,0,0);}
+function shiftDays(s,n){const d=parseISODate(s);d.setDate(d.getDate()+n);return localDateISO(d);}
+function shiftMonthsClamped(s,n){const d=parseISODate(s),day=d.getDate();const target=new Date(d.getFullYear(),d.getMonth()+n,1,12);const last=new Date(target.getFullYear(),target.getMonth()+1,0).getDate();target.setDate(Math.min(day,last));return localDateISO(target);}
+function shiftYearsClamped(s,n){const d=parseISODate(s),targetYear=d.getFullYear()+n;const target=new Date(targetYear,d.getMonth(),1,12);target.setDate(Math.min(d.getDate(),new Date(targetYear,d.getMonth()+1,0).getDate()));return localDateISO(target);}
+function startOfWeek(s){const d=parseISODate(s);d.setDate(d.getDate()-(d.getDay()+6)%7);return localDateISO(d);}
+function fmtDay(s){return new Intl.DateTimeFormat("it-IT",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}).format(parseISODate(s));}
+function fmtRange(a,b){return fmtDay(a)+" – "+fmtDay(b);}
+function pct(a,b){return b===0?null:((a-b)/b)*100;}
+function money(v){return analyticsEuro.format(Number(v||0));}
+function metricHtml(label,value){return '<div class="comparison-metric"><small>'+label+'</small><strong>'+value+'</strong></div>';}
+async function fetchPeriod(from,to,store){const {data,error}=await supabase.rpc("carusoagent_analytics",{p_from:from,p_to:to,p_store_code:store==="all"?null:store});if(error)throw error;return data;}
+function renderCompareCard(title,current,previous,from,to,prevFrom,prevTo){
+ const a=current.summary||{},b=previous.summary||{},delta=pct(Number(a.gross_total||0),Number(b.gross_total||0)),receipts=pct(Number(a.receipt_count||0),Number(b.receipt_count||0));
+ const dText=delta===null?"Confronto percentuale non disponibile":(delta>=0?"+":"")+delta.toLocaleString("it-IT",{maximumFractionDigits:1})+"% rispetto al periodo precedente";
+ const cls=delta!==null&&delta<0?"comparison-delta negative":"comparison-delta";
+ let html='<article class="comparison-card"><h3>'+title+'</h3><p class="comparison-period">Periodo: '+fmtRange(from,to)+'<br>Confronto: '+fmtRange(prevFrom,prevTo)+'</p><div class="comparison-grid">'+metricHtml("INCASSO ATTUALE",money(a.gross_total))+metricHtml("INCASSO CONFRONTO",money(b.gross_total))+metricHtml("SCONTRINI",integer.format(Number(a.receipt_count||0))+" / "+integer.format(Number(b.receipt_count||0)))+metricHtml("SCONTRINO MEDIO",money(a.average_ticket)+" / "+money(b.average_ticket))+'</div><p class="'+cls+'">'+dText+' · Scontrini: '+(receipts===null?"—":(receipts>=0?"+":"")+receipts.toLocaleString("it-IT",{maximumFractionDigits:1})+"%")+'</p>';
+ const stores=a.stores||[],prevStores=new Map((b.stores||[]).map(x=>[x.code,x]));
+ if(storeCurrentIsAll()&&stores.length){html+='<div class="subsection-title">Dettaglio punti vendita</div>';stores.forEach(x=>{const y=prevStores.get(x.code)||{};const change=pct(Number(x.gross_total||0),Number(y.gross_total||0));html+='<div class="comparison-store"><span>'+x.name+'</span><strong>'+money(x.gross_total)+' · '+(change===null?"—":(change>=0?"+":"")+change.toLocaleString("it-IT",{maximumFractionDigits:1})+"%")+'</strong></div>';});}
+ html+='</article>';return html;
+}
+function storeCurrentIsAll(){return $("analytics-store").value==="all";}
+async function runComparison(kind,yearOnYear=false){
+ const ref=$("analytics-to").value||shiftDays(localDateISO(new Date()),-1),store=$("analytics-store").value;
+ const d=parseISODate(ref);let from,to,prevFrom,prevTo,title,periods=[];
+ if(kind==="day"){from=to=ref;title=yearOnYear?"Giorno su anno":"Giornaliero · stesso giorno della settimana";periods=yearOnYear?[[shiftYearsClamped(ref,-1),shiftYearsClamped(ref,-1)]]:[-7,-14,-21].map(n=>[shiftDays(ref,n),shiftDays(ref,n)]);}
+ if(kind==="week"){from=startOfWeek(ref);to=ref;title=yearOnYear?"Settimana su anno":"Settimana · confronto con le 3 precedenti";periods=yearOnYear?[[shiftDays(from,-364),shiftDays(to,-364)]]:[-7,-14,-21].map(n=>[shiftDays(from,n),shiftDays(to,n)]);}
+ if(kind==="month"){from=localDateISO(new Date(d.getFullYear(),d.getMonth(),1,12));to=ref;title=yearOnYear?"Mese su anno":"Mese · confronto con i 3 mesi precedenti";periods=yearOnYear?[[shiftYearsClamped(from,-1),shiftYearsClamped(to,-1)]]:[-1,-2,-3].map(n=>[localDateISO(new Date(d.getFullYear(),d.getMonth()+n,1,12)),shiftMonthsClamped(ref,n)]);}
+ if(kind==="year"){from=d.getFullYear()+"-01-01";to=ref;title=yearOnYear?"Anno progressivo su anno precedente":"Anno progressivo · confronto anno su anno";periods=[[shiftYearsClamped(from,-1),shiftYearsClamped(to,-1)]];}
+ $("comparison-results").innerHTML="";$("comparison-status").textContent="Calcolo confronti in corso…";
+ const btns=document.querySelectorAll("[data-period],[data-yoy]");btns.forEach(b=>b.disabled=true);
+ try{
+  const current=await fetchPeriod(from,to,store);let cards="";
+  for(const [pf,pt] of periods){const previous=await fetchPeriod(pf,pt,store);const label=kind==="day"&&!yearOnYear?"Confronto con "+fmtDay(pf):kind==="month"&&!yearOnYear?new Intl.DateTimeFormat("it-IT",{month:"long",year:"numeric"}).format(parseISODate(pf)):"";cards+=renderCompareCard(label||title,current,previous,from,to,pf,pt);}
+  $("comparison-results").innerHTML=cards;
+  let detail=yearOnYear&&kind==="day"?" · "+fmtDay(from)+" ("+new Intl.DateTimeFormat("it-IT",{weekday:"long"}).format(parseISODate(from))+") vs "+fmtDay(periods[0][0])+" ("+new Intl.DateTimeFormat("it-IT",{weekday:"long"}).format(parseISODate(periods[0][0]))+")":"";
+  $("comparison-status").textContent=title+" · "+(store==="all"?"Tutti i punti vendita":$("analytics-store").selectedOptions[0].textContent)+detail;
+ }catch(err){$("comparison-status").textContent="Errore nei confronti: "+(err.message||err);console.error(err);}
+ finally{btns.forEach(b=>b.disabled=false);}
+}
+async function runYesterday(){
+ const day=shiftDays(localDateISO(new Date()),-1);$("yesterday-title").textContent="Incassi del "+fmtDay(day);$("yesterday-status").textContent="Lettura dati definitivi…";
+ $("yesterday-kpis").innerHTML="";$("yesterday-stores").innerHTML="";
+ try{
+  const data=await fetchPeriod(day,day,"all"),s=data.summary||{};
+  const kpis=[["INCASSO COMPLESSIVO",money(s.gross_total)],["SCONTRINI",integer.format(Number(s.receipt_count||0))],["SCONTRINO MEDIO",money(s.average_ticket)],["SCONTRINI ANNULLATI",integer.format(Number(s.cancelled_count||0))]];
+  $("yesterday-kpis").innerHTML=kpis.map(([l,v])=>'<article class="analytics-kpi"><small>'+l+'</small><strong>'+v+'</strong></article>').join("");
+  $("yesterday-stores").innerHTML=(data.stores||[]).map(x=>'<div class="yesterday-store"><div><strong>'+x.name+'</strong><small>'+integer.format(Number(x.receipt_count||0))+' scontrini · medio '+money(x.average_ticket)+'</small></div><b>'+money(x.gross_total)+'</b></div>').join("")||'<p class="analytics-status">Nessuno scontrino registrato per questa giornata.</p>';
+  $("yesterday-status").textContent="Dati letti dallo storico · giornata conclusa";
+ }catch(err){$("yesterday-status").textContent="Impossibile caricare il riepilogo: "+(err.message||err);console.error(err);}
+}
+$("yesterday-open").addEventListener("click",()=>{$("yesterday-panel").hidden=false;runYesterday();$("yesterday-panel").scrollIntoView({behavior:"smooth",block:"start"});});
+$("yesterday-close").addEventListener("click",()=>{$("yesterday-panel").hidden=true;});
+document.querySelectorAll("[data-period]").forEach(b=>b.addEventListener("click",()=>runComparison(b.dataset.period,false)));
+document.querySelectorAll("[data-yoy]").forEach(b=>b.addEventListener("click",()=>runComparison(b.dataset.yoy,true)));
+
 async function runAnalytics(){
- const from=$("analytics-from").value,to=$("analytics-to").value,store=$("analytics-store").value;
- if(!from||!to||from>to){$("analytics-status").textContent="Seleziona un intervallo di date valido.";return;}
+ const to=$("analytics-to").value,from=to.slice(0,4)+"-01-01",store=$("analytics-store").value;
+ if(!to){$("analytics-status").textContent="Seleziona una data valida.";return;}
  const btn=$("analytics-run");btn.disabled=true;$("analytics-status").textContent="Elaborazione dello storico in corso…";
  try{
   const {data,error}=await supabase.rpc("carusoagent_analytics",{p_from:from,p_to:to,p_store_code:store==="all"?null:store});
@@ -85,7 +142,7 @@ async function runAnalytics(){
  }catch(err){$("analytics-status").textContent="Errore durante l'analisi: "+(err.message||err);console.error("CarusoAgent analytics",err);}
  finally{btn.disabled=false;}
 }
-$("analytics-open").addEventListener("click",()=>{$("analytics-panel").hidden=false;document.querySelector(".intro-row").hidden=true;document.querySelector(".hero-card").hidden=true;document.querySelector(".metrics-row").hidden=true;document.querySelector(".section-heading:not(.analytics-title)").hidden=true; $("stores").hidden=true;$("admin-panel").hidden=true; $("analytics-to").value=new Date().toLocaleDateString("en-CA",{timeZone:"Europe/Rome"});runAnalytics();window.scrollTo(0,0);});
+$("analytics-open").addEventListener("click",()=>{$("analytics-panel").hidden=false;document.querySelector(".intro-row").hidden=true;document.querySelector(".hero-card").hidden=true;document.querySelector(".metrics-row").hidden=true;document.querySelector(".section-heading:not(.analytics-title)").hidden=true; $("stores").hidden=true;$("admin-panel").hidden=true; $("analytics-to").value=shiftDays(localDateISO(new Date()),-1);runComparison("year",true);window.scrollTo(0,0);});
 $("analytics-close").addEventListener("click",()=>{$("analytics-panel").hidden=true;document.querySelector(".intro-row").hidden=false;document.querySelector(".hero-card").hidden=false;document.querySelector(".metrics-row").hidden=false;document.querySelectorAll("#dashboard-content>.section-heading:not(.analytics-title)").forEach(x=>x.hidden=false);$("stores").hidden=false;if(document.querySelector("#admin-panel"))$("admin-panel").hidden=$("signed-user").textContent.includes("Amministratore")?false:true;window.scrollTo(0,0);});
 $("analytics-run").addEventListener("click",runAnalytics);
 function passkeySupported(){return window.isSecureContext && !!window.PublicKeyCredential && typeof supabase.auth.registerPasskey==="function" && typeof supabase.auth.signInWithPasskey==="function";}
