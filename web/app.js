@@ -149,7 +149,7 @@ function passkeySupported(){return window.isSecureContext && !!window.PublicKeyC
 if(!passkeySupported()){$("passkey-login").hidden=true;$("passkey-register").hidden=true;}
 $("passkey-login").addEventListener("click",async()=>{const btn=$("passkey-login");btn.disabled=true;message("Attendo la conferma Face ID…");try{const {error}=await supabase.auth.signInWithPasskey();if(error)throw error;await refreshSession();}catch(err){message("Accesso con Face ID non riuscito: "+(err.message||err),true);}finally{btn.disabled=false;}});
 $("passkey-register").addEventListener("click",async()=>{const btn=$("passkey-register");btn.disabled=true;try{const {data,error}=await supabase.auth.registerPasskey();if(error)throw error;alert("Face ID attivato per questo account su questo iPhone. La prossima volta potrai accedere con la passkey.");btn.textContent="Face ID attivo";btn.disabled=true;}catch(err){alert("Impossibile attivare Face ID: "+(err.message||err));}finally{if(btn.textContent!=="Face ID attivo")btn.disabled=false;}});
-const VAPID_PUBLIC_KEY = "BBWg_KHt8_1WwERrlfURsiOLObpx_mxyfLiHWacqRYJxYgRRcum2WSWjBor-1agf49sELma8c9oZB2nf_DZvPvg";
+const VAPID_PUBLIC_KEY = "BFXO5F0fq6-pTEEV0HFV5_wQvJ61wYsBZ6KVnOqKmMJJ0_XCd-qmFz_EZUMyYfOTj2U4O5e3Sd3r3agM7BKqCIE";
 function urlBase64ToUint8Array(base64String){
  const padding="=".repeat((4-base64String.length%4)%4);
  const base64=(base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
