@@ -149,7 +149,7 @@ function passkeySupported(){return window.isSecureContext && !!window.PublicKeyC
 if(!passkeySupported()){$("passkey-login").hidden=true;$("passkey-register").hidden=true;}
 $("passkey-login").addEventListener("click",async()=>{const btn=$("passkey-login");btn.disabled=true;message("Attendo la conferma Face ID…");try{const {error}=await supabase.auth.signInWithPasskey();if(error)throw error;await refreshSession();}catch(err){message("Accesso con Face ID non riuscito: "+(err.message||err),true);}finally{btn.disabled=false;}});
 $("passkey-register").addEventListener("click",async()=>{const btn=$("passkey-register");btn.disabled=true;try{const {data,error}=await supabase.auth.registerPasskey();if(error)throw error;alert("Face ID attivato per questo account su questo iPhone. La prossima volta potrai accedere con la passkey.");btn.textContent="Face ID attivo";btn.disabled=true;}catch(err){alert("Impossibile attivare Face ID: "+(err.message||err));}finally{if(btn.textContent!=="Face ID attivo")btn.disabled=false;}});
-const VAPID_PUBLIC_KEY = "BKDBwqHRS-9A5m7jWlIeDODwyEQqJ5yJ6hknN1Wab94QTH0FVps0_3W3b9wd6vDKPHPRBLKC6MGSAQY_c9sFbcw";
+const VAPID_PUBLIC_KEY = "BBWg_KHt8_1WwERrlfURsiOLObpx_mxyfLiHWacqRYJxYgRRcum2WSWjBor-1agf49sELma8c9oZB2nf_DZvPvg";
 function urlBase64ToUint8Array(base64String){
  const padding="=".repeat((4-base64String.length%4)%4);
  const base64=(base64String+padding).replace(/-/g,"+").replace(/_/g,"/");
@@ -174,8 +174,10 @@ $("notifications-enable").addEventListener("click",async()=>{
   if(permission!=="granted"){btn.textContent=permission==="denied"?"Notifiche bloccate":"Attiva notifiche";if(permission==="denied")alert("Abilita le notifiche di Caruso Incassi dalle impostazioni dell'iPhone.");return;}
   const registration=await navigator.serviceWorker.register("./sw.js");
   await navigator.serviceWorker.ready;
+  const vapidKey=urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
   let subscription=await registration.pushManager.getSubscription();
-  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
+  if(subscription){const oldKey=subscription.options.applicationServerKey;const same=oldKey&&oldKey.length===vapidKey.length&&oldKey.every((v,i)=>v===vapidKey[i]);if(!same){await subscription.unsubscribe();subscription=null;}}
+  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:vapidKey});
   await api("push_subscribe",{subscription:subscription.toJSON(),device_label:/iPhone|iPad/i.test(navigator.userAgent)?"iPhone/iPad":"Browser"});
   const {data:{session}}=await supabase.auth.getSession();
   if(!session?.access_token)throw new Error("Sessione scaduta: accedi nuovamente.");
