@@ -1,0 +1,18 @@
+{
+  "name": "Caruso Incassi",
+  "short_name": "Caruso Incassi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080f1b",
+  "theme_color": "#080f1b",
+  "icons": [
+    {
+      "src": "./assets/apple-touch-icon.png?v=5",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "description": "Monitoraggio incassi supermercati Caruso"
+}
